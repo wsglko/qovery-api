@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express")
 const cors = require("cors")
 const app = express()
-const port = 3000
+const port = 3000||5001
 require("./db/office-connection")
 const Bstchecklist = require("./models/bstchecklists")
 const Image = require("./models/images")
@@ -26,7 +26,7 @@ app.get('/api/bstchecklist', async (req, res, next) => {
     }
 })
 
-app.post('/api/newimage', async (req, res, next) => {
+app.post('/api/newimage', async (req, res) => {
     let imgData = {
         "delUrl": req.body.delUrl,
         "viewUrl": req.body.viewUrl,
