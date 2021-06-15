@@ -26,7 +26,7 @@ app.get('/api/bstchecklist', async (req, res, next) => {
     }
 })
 
-app.get('/api/images', async (req, res) => {
+app.get('/api/images', async (req, res, next) => {
   try {
     const docs = await Image.find()
     res.json(docs)
