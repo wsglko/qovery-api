@@ -26,6 +26,15 @@ app.get('/api/bstchecklist', async (req, res, next) => {
     }
 })
 
+app.get('/api/images', async (req, res) => {
+  try {
+    const docs = await Image.find()
+    res.json(docs)
+  } catch (err) {
+    res.json(err)
+  }
+})
+
 app.post('/api/newimage', async (req, res) => {
     let imgData = {
         "delUrl": req.body.delUrl,
@@ -41,7 +50,7 @@ app.post('/api/newimage', async (req, res) => {
             status: true,
             id: added._id
         })
-        
+
     } catch (err) {
         res.json({
             status: false,
