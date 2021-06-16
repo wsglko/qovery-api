@@ -35,13 +35,15 @@ app.get('/api/images', async (req, res, next) => {
   }
 })
 
-app.post('/api/newimage', async (req, res) => {
+app.post('/api/newimage', async (req, res, next) => {
     let imgData = {
         "delUrl": req.body.delUrl,
         "viewUrl": req.body.viewUrl,
         "imgDate": req.body.imgDate,
         "imgCat": req.body.imgCat,
-        "imgDetails": req.body.imgDetails
+        "imgDetails": req.body.imgDetails,
+        "updateBy":req.body.updateBy,
+        "updateOn":req.body.updateOn
     }
     try {
         const addImageData = new Image(imgData)
@@ -110,5 +112,5 @@ app.post('/api/newchecklist', async (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log("Server is Running on Port: 5000")
+    console.log(`Server is Running on Port: ${port}`)
 })
