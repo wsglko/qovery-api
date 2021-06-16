@@ -10,10 +10,16 @@ const imageSchema = new mongoose.Schema({
         type:String
     },
     imgCat: {
-       type:String 
+       type:String
     },
     imgDetails: {
         type:String
+    },
+    updateBy: {
+      type:String
+    },
+    updateOn: {
+      type:String
     }
 })
 const Image = new mongoose.model("images", imageSchema)
