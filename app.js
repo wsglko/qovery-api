@@ -10,8 +10,11 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cors())
 
-app.get('/', (req, res) => {
-    res.send("This is Root Directory")
+app.get('/', (req, res, next => {
+    res.json({
+      status:true,
+      message:"Welcome"
+    })
 })
 
 app.get('/api/bstchecklist', async (req, res, next) => {
