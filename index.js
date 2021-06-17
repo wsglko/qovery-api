@@ -14,6 +14,7 @@ app.use(express.staticProvider(__dirname+'/public'))
 app.get('/', (req, res, next => {
     res.render('index.html')
 })
+)
 
 app.get('/api/bstchecklist', async (req, res, next) => {
     try {
