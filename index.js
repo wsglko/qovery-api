@@ -9,12 +9,11 @@ const Image = require("./models/images")
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cors())
-app.use(express.staticProvider(__dirname+'/public'))
+app.use(express.static(__dirname+'/public'))
 
-app.get('/', (req, res, next => {
+app.get('/', (req, res) => {
     res.render('index.html')
 })
-)
 
 app.get('/api/bstchecklist', async (req, res, next) => {
     try {
