@@ -2,20 +2,81 @@ require("dotenv").config();
 const express = require("express")
 const cors = require("cors")
 const app = express()
-const port = 3000||5001
+const bcrypt = require("bcrypt")
+const port = process.env.PORT || 5001
 require("./db/office-connection")
 const Bstchecklist = require("./models/bstchecklists")
 const Image = require("./models/images")
+const User = require("./models/users")
+const cps = require("./models/coloProviders")
+const path = require("path")
+//const moment = require("moment")
+const jwt = require("jsonwebtoken")
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cors())
 app.use(express.static(__dirname+'/public'))
+const users = []
 
 app.get('/', (req, res) => {
-    res.render('index.html')
+    res.sendFile('index.html')
 })
 
-app.get('/api/bstchecklist', async (req, res, next) => {
+app.get("/users", (req, res) => {
+    res.json(users)
+})
+
+app.get("/users/register", (req, res) => {
+    res.sendFile(path.join(__dirname+"/public/register.html"))
+})
+
+app.post("/users/register", async (req, res) => {
+    const emailExists = await User.findOne({ email: req.body.email })
+    if (emailExists) return res.json({status:400,message:"Email already exists"})
+    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+    const userData = new User({ email: req.body.email, password: hashedPassword,fullName:req.body.fullName,baseLocation:req.body.baseLocation,createdOn:new Date(), updateOn:new Date() })
+    try {
+        const add = await userData.save()
+        res.json({
+            status: true,
+            id: add._id
+        })
+    } catch(err) {
+        res.json({
+            status: false,
+            message: err
+        })
+    }
+})
+
+app.get("/users/login", (req, res) => {
+    res.sendFile(path.join(__dirname+"/public/login.html"))
+})
+
+app.post("/users/login", async (req, res) => {
+    const user = await User.findOne({ email: req.body.email })
+    if (user === null) {
+        return res.json({
+            status: 400,
+            message: "User not found"
+        })
+    }
+    try {
+        if (await bcrypt.compare(req.body.password, user.password)) {
+            //res.send("success")
+            users.push(user)
+            const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET)
+            res.header('auth-token',token).send(token)
+            //res.redirect("/")
+        } else {
+            res.send("Invalid Password")
+        }
+    } catch {
+        return res.status(500).send()
+    }
+})
+
+app.get('/api/bstchecklist', async (req, res) => {
     try {
         const docs = await Bstchecklist.find()
         res.json(docs)
@@ -27,16 +88,36 @@ app.get('/api/bstchecklist', async (req, res, next) => {
     }
 })
 
-app.get('/api/images', async (req, res, next) => {
-  try {
-    const docs = await Image.find()
+app.get('/api/images', async (req, res) => {
+    req.header('auth-token',token)
+    try {
+        const docs = await Image.find()
+        res.json(docs)
+      } catch (err) {
+        res.json(err)
+      }
+})
+
+app.get("/api/cps", async(req,res)=>{
+  try{
+    const docs = await cps.find()
     res.json(docs)
   } catch (err) {
     res.json(err)
   }
 })
 
-app.post('/api/newimage', async (req, res, next) => {
+app.post("api/cps", async(req,res)=>{
+  try{
+    const addCps = new cps({"provider":req.body.provider,"site_id":req.body.site_id,"site_id_2":req.body.site_id_2,"sap_id":req.body.sap_id,"site_name":req.body.site_name,"location":req.body.location,"sr_date":req.body.sr_date,"sr_no":req.body.sr_no,"sp_date":req.body.sp_date,"so_date":req.body.so_date,"rfi_date":req.body.rfi_date,"on_air_date":req.body.on_air_date,"live_date":req.body.live_date,"rfi_accept_date":req.body.rfi_accept_date,"contact_details":req.body.contact_details,"remarks":req.body.remarks,"update_on":req.body.update_on})
+    const added = await addCps.save()
+    res.json({status: true, id: added._id})
+  }catch(err){
+    res.json({status: false, message: err})
+  }
+})
+
+app.post('/api/newimage', async (req, res) => {
     let imgData = {
         "delUrl": req.body.delUrl,
         "viewUrl": req.body.viewUrl,

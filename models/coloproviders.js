@@ -1,0 +1,56 @@
+const mongoose = require("mongoose")
+const cpSchema = new mongoose.Schema({
+  provider:{
+    type:String
+  },
+  site_id:{
+    type:String
+  },
+  site_id_2:{
+    type:String
+  },
+  sap_id:{
+    type:String
+  },
+  site_name:{
+    type:String
+  },
+  location:{
+    type:String
+  },
+  sr_date:{
+    type:String
+  },
+  sr_no:{
+    type:String
+  },
+  sp_date:{
+    type:String
+  },
+  so_date:{
+    type:String
+  },
+  rfi_date:{
+    type:String
+  },
+  on_air_date:{
+    type:String
+  },
+  live_date:{
+    type:String
+  },
+  rfi_accept_date:{
+    type:String
+  },
+  contact_details:{
+    type:String
+  },
+  remarks:{
+    type:String
+  },
+  update_on:{
+    type:String
+  }
+})
+const cps = new mongoose.model("coloProviders",cpSchema)
+module.exports = cps
